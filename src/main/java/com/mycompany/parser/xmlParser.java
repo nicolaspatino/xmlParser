@@ -25,7 +25,7 @@ import org.w3c.dom.NodeList;
 
 /**
  *
- * @author daniel
+ * @author 2112712
  */
 public class xmlParser {
     public Element process;
