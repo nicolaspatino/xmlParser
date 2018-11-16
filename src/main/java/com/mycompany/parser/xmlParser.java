@@ -32,13 +32,11 @@ public class xmlParser {
     public List<Element> actors = new ArrayList<Element>();
     public List<Element> businessRules = new ArrayList<Element>();
     public List<Element> events = new ArrayList<Element>();
-    public List<Element> taskes = new ArrayList<Element>();
+    public List<Element> tasks = new ArrayList<Element>();
 
     static final String outputEncoding = "UTF-8";
 
-    private static void usage() {
-        System.out.println("Usage: xmlechoparser file1");
-    }
+ 
 
     public void parse(String filename) throws Exception {
         FileOutputStream archivoHTML;
@@ -47,6 +45,7 @@ public class xmlParser {
             File inputFile = new File(filename);
             archivoHTML= new FileOutputStream("documentacion.html");
             p = new PrintStream(archivoHTML);
+            generate(archivoHTML, p);
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(inputFile);
@@ -74,7 +73,7 @@ public class xmlParser {
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) nNode;
                     if (element.getNodeName().contains("Task") || element.getNodeName().equals("model:callActivity")) {
-                        taskes.add(element);
+                        tasks.add(element);
                     }
                     if (element.getNodeName().contains("Event")) {
                         events.add(element);
@@ -84,16 +83,36 @@ public class xmlParser {
                     }
                 }
             }
+            agregarAHTML(archivoHTML, p, "Actores");    
+            buildHtml(archivoHTML,p,actors,"Nombre del actor :");
+            agregarAHTML(archivoHTML, p, "Procesos " );    
+            buildHtml(archivoHTML,p,businessRules,"Nombre del proceso :");
+            agregarAHTML(archivoHTML, p, "Events");    
+            buildHtml(archivoHTML,p,events,"Nombre de el evento :");
+            agregarAHTML(archivoHTML, p, "Tasks");    
+            buildHtml(archivoHTML,p,tasks ,"Nombre de las tareas :");
+            cerrarHTML(archivoHTML, p);
+            
             
         }catch(Exception e){
             
         }
         
     }
-    public void buildHtml(){
-        actors.forEach((actor) -> {
-            System.out.println(actor);
+    public void buildHtml(FileOutputStream archivoHTML, PrintStream p,List<Element> array,String tipo){
+        array.forEach((element) -> {
+            if (element.getNodeType() == Node.ELEMENT_NODE) {
+            agregarSEPHTML(archivoHTML,p);
+            agregarAHTML(archivoHTML, p, tipo +element.getAttribute("name"));
+            NodeList nodeList = element.getChildNodes();
+            for(int j = 0; j < nodeList.getLength(); j++){                             
+                        if(nodeList.item(j).getNodeName()=="model:documentation"){                            
+                            agregarDEHTML(archivoHTML,p, element.getElementsByTagName("model:documentation").item(0).getTextContent());                            
+                        }
+                    }}
+          cerrarSEPHTML(archivoHTML,p); 
         });
+        
     }
     private void generate(FileOutputStream archivoHTML, PrintStream p){
                 p.println("<HTML>\n" +
