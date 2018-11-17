@@ -11,7 +11,7 @@ package com.mycompany.parser;
  */
 public class HtmlBuilder {
     public static void main(String[] args) throws Exception {
-        String file="pensiones.bpmn";
+        String file="afiliacionPensiones_1.0.bpmn";
         xmlParser doc = new xmlParser();
         doc.parse(file);
     }
